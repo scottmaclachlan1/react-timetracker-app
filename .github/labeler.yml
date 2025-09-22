@@ -1,0 +1,8 @@
+bug:
+  - head-branch: ['^bug/']
+
+documentation:
+  - head-branch: ['^docs/']
+
+enhancement:
+  - head-branch: ['^feature/']
