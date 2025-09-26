@@ -19,9 +19,9 @@ jobs:
           script: |
             const branchName = context.payload.pull_request.head.ref;
             console.log('Branch name:', branchName);
-            
+
             let labelToAdd = null;
-            
+
             if (branchName.startsWith('bug/')) {
               labelToAdd = 'bug';
             } else if (branchName.startsWith('docs/')) {
@@ -29,9 +29,9 @@ jobs:
             } else if (branchName.startsWith('feature/')) {
               labelToAdd = 'enhancement';
             }
-            
+
             console.log('Label to add:', labelToAdd);
-            
+
             if (labelToAdd) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
