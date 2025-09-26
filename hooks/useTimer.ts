@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-
-interface Session {
-  id: string;
-  startTime: string;
-  endTime?: string;
-  duration: string;
-}
+import { Session, sessionStorage } from '../utils/sessionStorage';
 
 export function useTimer() {
   const [isRunning, setIsRunning] = useState(false);
@@ -14,6 +8,15 @@ export function useTimer() {
   const [sessions, setSessions] = useState<Session[]>([]);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load sessions from storage on mount
+  useEffect(() => {
+    const loadSessions = async () => {
+      const savedSessions = await sessionStorage.loadSessions();
+      setSessions(savedSessions);
+    };
+    loadSessions();
+  }, []);
 
   // Format time as HH:MM:SS
   const formatTime = (seconds: number): string => {
@@ -48,7 +51,7 @@ export function useTimer() {
     }
   };
 
-  const stop = () => {
+  const stop = async () => {
     if (isRunning || isPaused) {
       const endTime = new Date();
 
@@ -62,8 +65,12 @@ export function useTimer() {
         duration: formatTime(elapsedTime),
       };
 
-      // Add to sessions
-      setSessions((prev) => [newSession, ...prev]);
+      // Add to sessions in state
+      const updatedSessions = [newSession, ...sessions];
+      setSessions(updatedSessions);
+
+      // Save to AsyncStorage
+      await sessionStorage.addSession(newSession);
 
       // Reset timer
       setIsRunning(false);
@@ -92,6 +99,11 @@ export function useTimer() {
     };
   }, [isRunning, isPaused]);
 
+  // Export sessions as JSON
+  const exportSessionsAsJSON = async (): Promise<string> => {
+    return await sessionStorage.getSessionsAsJSON();
+  };
+
   return {
     isRunning,
     isPaused,
@@ -101,5 +113,6 @@ export function useTimer() {
     start,
     pause,
     stop,
+    exportSessionsAsJSON,
   };
 }
