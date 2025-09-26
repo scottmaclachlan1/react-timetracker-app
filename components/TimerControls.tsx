@@ -7,15 +7,20 @@ interface TimerControlsProps {
   onStop: () => void;
 }
 
-export default function TimerControls({ isRunning, onStart, onStop }: TimerControlsProps) {
+export default function TimerControls({
+  isRunning,
+  onStart,
+  onStop,
+}: TimerControlsProps) {
   return (
     <TouchableOpacity
-      style={[styles.button, isRunning ? styles.stopButton : styles.startButton]}
+      style={[
+        styles.button,
+        isRunning ? styles.stopButton : styles.startButton,
+      ]}
       onPress={isRunning ? onStop : onStart}
     >
-      <Text style={styles.buttonText}>
-        {isRunning ? 'Stop' : 'Start'}
-      </Text>
+      <Text style={styles.buttonText}>{isRunning ? 'Stop' : 'Start'}</Text>
     </TouchableOpacity>
   );
 }

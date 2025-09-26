@@ -7,7 +7,7 @@ interface TimerDisplayProps {
 
 export default function TimerDisplay({ time }: TimerDisplayProps) {
   const { width: screenWidth } = useWindowDimensions();
-  
+
   // Calculate responsive font size based on screen width
   const fontSize = Math.min(screenWidth * 0.15, 72); // Max 72px, but scale with screen width
 
