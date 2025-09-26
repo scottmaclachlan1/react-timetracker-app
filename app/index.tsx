@@ -1,33 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SessionList from '../components/SessionList';
 import TimerControls from '../components/TimerControls';
 import TimerDisplay from '../components/TimerDisplay';
+import { useTimer } from '../hooks/useTimer';
 
 export default function Index() {
-  const [isRunning, setIsRunning] = useState(false);
-  const [time, setTime] = useState('00:00:00');
-  const [sessions, setSessions] = useState([]);
-
-  const handleStart = () => {
-    setIsRunning(true);
-    // TODO: Implement actual timer logic
-  };
-
-  const handleStop = () => {
-    setIsRunning(false);
-    // TODO: Implement session saving logic
-  };
+  const { isRunning, isPaused, formattedTime, sessions, start, pause, stop } =
+    useTimer();
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <TimerDisplay time={time} />
+        <TimerDisplay time={formattedTime} />
         <TimerControls
           isRunning={isRunning}
-          onStart={handleStart}
-          onStop={handleStop}
+          isPaused={isPaused}
+          onStart={start}
+          onPause={pause}
+          onStop={stop}
         />
         <SessionList sessions={sessions} />
       </View>

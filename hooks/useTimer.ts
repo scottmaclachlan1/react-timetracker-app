@@ -1,0 +1,105 @@
+import { useEffect, useRef, useState } from 'react';
+
+interface Session {
+  id: string;
+  startTime: string;
+  endTime?: string;
+  duration: string;
+}
+
+export function useTimer() {
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Format time as HH:MM:SS
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Format date/time for session storage
+  const formatDateTime = (date: Date): string => {
+    return date.toLocaleString();
+  };
+
+  const start = () => {
+    if (!isRunning && !isPaused) {
+      // Starting fresh
+      setElapsedTime(0);
+      setIsRunning(true);
+      setIsPaused(false);
+    } else if (isPaused) {
+      // Resuming from pause
+      setIsRunning(true);
+      setIsPaused(false);
+    }
+  };
+
+  const pause = () => {
+    if (isRunning && !isPaused) {
+      setIsPaused(true);
+    }
+  };
+
+  const stop = () => {
+    if (isRunning || isPaused) {
+      const endTime = new Date();
+
+      // Create new session using the elapsed time from the UI timer
+      const newSession: Session = {
+        id: Date.now().toString(),
+        startTime: formatDateTime(
+          new Date(endTime.getTime() - elapsedTime * 1000)
+        ),
+        endTime: formatDateTime(endTime),
+        duration: formatTime(elapsedTime),
+      };
+
+      // Add to sessions
+      setSessions((prev) => [newSession, ...prev]);
+
+      // Reset timer
+      setIsRunning(false);
+      setIsPaused(false);
+      setElapsedTime(0);
+    }
+  };
+
+  // Update elapsed time every second
+  useEffect(() => {
+    if (isRunning && !isPaused) {
+      intervalRef.current = setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isRunning, isPaused]);
+
+  return {
+    isRunning,
+    isPaused,
+    elapsedTime,
+    formattedTime: formatTime(elapsedTime),
+    sessions,
+    start,
+    pause,
+    stop,
+  };
+}
