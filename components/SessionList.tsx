@@ -16,10 +16,14 @@ export default function SessionList({ sessions }: SessionListProps) {
   const formatSessionDate = (dateTimeString: string): string => {
     try {
       const date = new Date(dateTimeString);
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
+      return (
+        date.toLocaleDateString() +
+        ' ' +
+        date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      );
     } catch (error) {
       return dateTimeString;
     }
@@ -28,9 +32,13 @@ export default function SessionList({ sessions }: SessionListProps) {
   const renderSession = ({ item }: { item: Session }) => (
     <View style={styles.sessionItem}>
       <View style={styles.sessionInfo}>
-        <Text style={styles.sessionDate}>{formatSessionDate(item.startTime)}</Text>
+        <Text style={styles.sessionDate}>
+          {formatSessionDate(item.startTime)}
+        </Text>
         {item.endTime && (
-          <Text style={styles.sessionEndTime}>Ended: {formatSessionDate(item.endTime)}</Text>
+          <Text style={styles.sessionEndTime}>
+            Ended: {formatSessionDate(item.endTime)}
+          </Text>
         )}
       </View>
       <Text style={styles.sessionDuration}>{item.duration}</Text>
