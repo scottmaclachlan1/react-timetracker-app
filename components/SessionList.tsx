@@ -16,6 +16,10 @@ export default function SessionList({ sessions }: SessionListProps) {
   const formatSessionDate = (dateTimeString: string): string => {
     try {
       const date = new Date(dateTimeString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return dateTimeString;
+      }
       return (
         date.toLocaleDateString() +
         ' ' +
