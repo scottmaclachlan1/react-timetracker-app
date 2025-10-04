@@ -7,7 +7,7 @@ export function useTimer() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load sessions from storage on mount
   useEffect(() => {
@@ -104,6 +104,12 @@ export function useTimer() {
     return await sessionStorage.getSessionsAsJSON();
   };
 
+  // Clear all sessions
+  const clearSessions = async (): Promise<void> => {
+    await sessionStorage.clearSessions();
+    setSessions([]);
+  };
+
   return {
     isRunning,
     isPaused,
@@ -114,5 +120,6 @@ export function useTimer() {
     pause,
     stop,
     exportSessionsAsJSON,
+    clearSessions,
   };
 }

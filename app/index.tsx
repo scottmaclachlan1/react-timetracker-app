@@ -7,7 +7,7 @@ import TimerDisplay from '../components/TimerDisplay';
 import { useTimer } from '../hooks/useTimer';
 
 export default function Index() {
-  const { isRunning, isPaused, formattedTime, sessions, start, pause, stop } =
+  const { isRunning, isPaused, formattedTime, sessions, start, pause, stop, clearSessions } =
     useTimer();
 
   return (
@@ -21,7 +21,7 @@ export default function Index() {
           onPause={pause}
           onStop={stop}
         />
-        <SessionList sessions={sessions} />
+        <SessionList sessions={sessions} onClearSessions={clearSessions} />
       </View>
     </SafeAreaView>
   );

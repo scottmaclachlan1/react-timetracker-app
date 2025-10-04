@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Session {
   id: string;
@@ -10,9 +10,10 @@ interface Session {
 
 interface SessionListProps {
   sessions: Session[];
+  onClearSessions: () => Promise<void>;
 }
 
-export default function SessionList({ sessions }: SessionListProps) {
+export default function SessionList({ sessions, onClearSessions }: SessionListProps) {
   const formatSessionDate = (dateTimeString: string): string => {
     try {
       const date = new Date(dateTimeString);
@@ -33,6 +34,26 @@ export default function SessionList({ sessions }: SessionListProps) {
     }
   };
 
+  const handleClearSessions = () => {
+    Alert.alert(
+      'Clear All Sessions',
+      'Are you sure you want to delete all saved sessions? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            await onClearSessions();
+          },
+        },
+      ]
+    );
+  };
+
   const renderSession = ({ item }: { item: Session }) => (
     <View style={styles.sessionItem}>
       <View style={styles.sessionInfo}>
@@ -51,7 +72,18 @@ export default function SessionList({ sessions }: SessionListProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recent Sessions</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Recent Sessions</Text>
+        {sessions.length > 0 && (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={handleClearSessions}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.clearButtonText}>Clear All</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {sessions.length === 0 ? (
         <View style={styles.placeholder}>
           <Text style={styles.placeholderText}>
@@ -75,11 +107,27 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   title: {
     fontSize: 20,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 16,
+  },
+  clearButton: {
+    backgroundColor: '#ff4444',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  clearButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   list: {
     flex: 1,
