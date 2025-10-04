@@ -13,9 +13,26 @@ interface SessionListProps {
 }
 
 export default function SessionList({ sessions }: SessionListProps) {
+  const formatSessionDate = (dateTimeString: string): string => {
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    } catch (error) {
+      return dateTimeString;
+    }
+  };
+
   const renderSession = ({ item }: { item: Session }) => (
     <View style={styles.sessionItem}>
-      <Text style={styles.sessionTime}>{item.startTime}</Text>
+      <View style={styles.sessionInfo}>
+        <Text style={styles.sessionDate}>{formatSessionDate(item.startTime)}</Text>
+        {item.endTime && (
+          <Text style={styles.sessionEndTime}>Ended: {formatSessionDate(item.endTime)}</Text>
+        )}
+      </View>
       <Text style={styles.sessionDuration}>{item.duration}</Text>
     </View>
   );
@@ -58,21 +75,33 @@ const styles = StyleSheet.create({
   sessionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 12,
     paddingHorizontal: 16,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
     marginBottom: 8,
   },
-  sessionTime: {
+  sessionInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  sessionDate: {
     fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 2,
+  },
+  sessionEndTime: {
+    fontSize: 14,
     color: '#666',
   },
   sessionDuration: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#4CAF50',
+    textAlign: 'right',
+    minWidth: 80,
   },
   placeholder: {
     flex: 1,
